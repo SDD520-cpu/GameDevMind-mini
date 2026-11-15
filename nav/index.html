@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>技术图谱 · 交互式导航（复现版）</title>
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--line:#e3e8ef;--text:#1f2937;--muted:#6b7280;--blue:#185fa5;--blue-bg:#e6f1fb}
+*{box-sizing:border-box}
+body{margin:0;padding:26px;background:var(--bg);color:var(--text);font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;font-size:14px}
+.wrap{max-width:920px;margin:0 auto}
+h1{font-size:20px;font-weight:600;margin:0 0 6px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:18px;line-height:1.6}
+.stats{display:flex;gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 16px;flex:1;text-align:center}
+.stat b{font-size:21px;color:var(--blue)}
+.stat span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.controls{display:flex;gap:10px;margin-bottom:16px}
+input,select{padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff;color:var(--text)}
+input{flex:1}
+select{min-width:160px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:9px}
+.item .t{font-size:15px;font-weight:600}
+.badge{display:inline-block;background:var(--blue-bg);color:var(--blue);border-radius:5px;padding:1px 8px;font-size:12px;margin-left:8px;font-weight:400}
+.item .p{color:var(--muted);font-size:12px;margin-top:5px;font-family:Consolas,monospace;word-break:break-all}
+.tags{margin-top:8px}
+.tag{display:inline-block;border:1px solid #c9e7d9;border-radius:5px;padding:1px 7px;font-size:12px;color:#0f6e56;background:#e1f5ee;margin-right:6px}
+.empty{color:var(--muted);padding:24px;text-align:center;background:#fff;border:1px dashed var(--line);border-radius:10px}
+footer{color:var(--muted);font-size:12px;margin-top:18px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>游戏开发 · 技术图谱导航</h1>
+  <div class="sub">复现版 · 页面数据由 <code>python -m gdm build</code> 从 Markdown 语料自动生成 &nbsp;|&nbsp; 原项目 gonglei007/GameDevMind</div>
+  <div class="stats">
+    <div class="stat"><b id="s-docs">–</b><span>文档</span></div>
+    <div class="stat"><b id="s-domains">–</b><span>能力域</span></div>
+    <div class="stat"><b id="s-keywords">–</b><span>关键词</span></div>
+    <div class="stat"><b id="s-hits">–</b><span>当前匹配</span></div>
+  </div>
+  <div class="controls">
+    <input id="q" placeholder="输入术语搜索，例如：热更新 / 帧同步 / 内存池">
+    <select id="domain">
+      <option value="0">全部能力域</option>
+      <option value="1">1. 基础能力</option>
+      <option value="2">2. 技术能力</option>
+      <option value="3">3. 研发能力</option>
+      <option value="4">4. 生产能力</option>
+      <option value="5">5. 管理能力</option>
+      <option value="6">6. 运营能力</option>
+    </select>
+  </div>
+  <div id="results"></div>
+  <footer>索引来源：INDEX.md · KEYWORDS.md · nav/content-data.js（三者均为自动生成物）</footer>
+</div>
+<script src="content-data.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+$("q").value = params.get("q") || "";
+$("domain").value = params.get("domain") || "0";
+
+function matchedTerms(path, q) {
+  if (!q) return [];
+  const out = [];
+  for (const [kw, paths] of Object.entries(KEYWORDS)) {
+    if (paths.includes(path) && kw.toLowerCase().includes(q)) out.push(kw);
+  }
+  return out.slice(0, 6);
+}
+function score(doc, q, terms) {
+  if (!q) return 1;
+  let s = 0;
+  if (doc.t.toLowerCase().includes(q)) s += 4;
+  if (terms.length) s += terms.some((t) => t.toLowerCase() === q) ? 5 : 3;
+  if ((doc.r || "").toLowerCase().includes(q)) s += 1;
+  return s;
+}
+function render() {
+  const q = $("q").value.trim().toLowerCase();
+  const dom = parseInt($("domain").value, 10);
+  const rows = DOCS.map((d) => {
+    const terms = matchedTerms(d.p, q);
+    return { d: d, terms: terms, s: score(d, q, terms) };
+  }).filter((x) => x.s > 0 && (!dom || x.d.c === dom));
+  rows.sort((a, b) => b.s - a.s || a.d.c - b.d.c || a.d.t.localeCompare(b.d.t));
+  $("s-hits").textContent = rows.length;
+  const box = $("results");
+  if (!rows.length) {
+    box.innerHTML = '<div class="empty">没有匹配的文档，换个术语试试</div>';
+    return;
+  }
+  box.innerHTML = rows.map(({ d, terms }) => `
+    <div class="item">
+      <div class="t">${d.t}<span class="badge">${d.c}. ${DOMAIN_NAMES[d.c]}</span></div>
+      <div class="p">${d.p} &nbsp;·&nbsp; 层级 L${d.l}${d.parent ? " · 上级已关联" : ""}</div>
+      <div class="tags">${terms.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
+    </div>`).join("");
+}
+$("q").addEventListener("input", render);
+$("domain").addEventListener("change", render);
+$("s-docs").textContent = DOCS.length;
+$("s-domains").textContent = new Set(DOCS.map((d) => d.c)).size;
+$("s-keywords").textContent = Object.keys(KEYWORDS).length;
+render();
+</script>
+</body>
+</html>

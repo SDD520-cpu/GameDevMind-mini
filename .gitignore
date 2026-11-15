@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+env/
+.DS_Store
+Thumbs.db
+.coverage
+htmlcov/
+
+# 本机生成的最终发送文案（不入库）
+MESSAGE_TO_SEND.md

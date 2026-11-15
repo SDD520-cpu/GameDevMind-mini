@@ -1,0 +1,70 @@
+<!doctype html><html lang='zh-CN'><head><meta charset='utf-8'><style>
+* { box-sizing: border-box; }
+body { margin:0; padding:26px; background:#eef1f5;
+  font-family:'Cascadia Code','Consolas','Microsoft YaHei Mono',monospace; }
+.window { border-radius:10px; overflow:hidden; background:#12161f;
+  box-shadow:0 12px 36px rgba(20,30,50,.22); }
+.titlebar { height:38px; background:#232a38; display:flex; align-items:center; padding:0 16px; gap:8px; }
+.dot { width:11px; height:11px; border-radius:50%; }
+.r{background:#ff5f57}.y{background:#febc2e}.g{background:#28c840}
+.title { color:#9aa7bd; font-size:12.5px; margin-left:12px; }
+pre { margin:0; padding:18px 22px 22px; color:#d6deeb; font-size:13px; line-height:19px;
+  white-space:pre; overflow:hidden;
+  font-family:'Cascadia Code','Consolas','Microsoft YaHei Mono',monospace; }
+.s-head{color:#82b1ff}.s-cmd{color:#e8edf6}.s-fix{color:#ffd166}.s-ok{color:#7ee2a8;font-weight:bold}
+.s-err{color:#ff8a80}.s-sep{color:#4a5670}.s-banner{color:#8ea0bd}.s-pass{color:#7ee2a8}.s-fail{color:#ff8a80}
+</style></head><body><div class='window'><div class='titlebar'><span class='dot r'></span><span class='dot y'></span><span class='dot g'></span><span class='title'>bash - python demo.py  |  gamedevmind-mini 运行演示</span></div><pre><span class="s-sep">==============================================================================</span>
+<span class="s-banner">  gamedevmind-mini  |  技术图谱索引引擎 · 本机运行演示</span>
+<span class="s-banner">  原项目: https://github.com/gonglei007/GameDevMind   (MIT / Python)</span>
+<span class="s-banner">  复现链路: 语料 -&gt; 倒排索引 -&gt; INDEX.md / KEYWORDS.md / nav/content-data.js</span>
+<span class="s-banner">  环境: Python 3.13.14 | win32 | 2026-11-15 16:33:01</span>
+<span class="s-sep">==============================================================================</span>
+<span class="s-head"># [1/5] 扫描语料，按「编号.标题.md」推断能力域与层级</span>
+<span class="s-banner">  16 篇文档 / 6 个能力域 / 60 个关键词 / 77 条索引关联</span>
+<span class="s-banner">  1.基础能力 4篇 · 2.技术能力 3篇 · 3.研发能力 2篇 · 4.生产能力 2篇 · 5.管理能力 2篇 · 6.运营能力 3篇</span>
+<span class="s-head"># [2/5] 生成三个自动产物（对应原项目 INDEX.md / KEYWORDS.md / content-data.js）</span>
+<span class="s-ok">&gt; INDEX.md                   1577 bytes</span>
+<span class="s-ok">&gt; KEYWORDS.md                7107 bytes</span>
+<span class="s-ok">&gt; nav/content-data.js        7403 bytes</span>
+<span class="s-head"># [3/5] 按术语定位：倒排索引检索</span>
+<span class="s-fix">$ python -m gdm search 内存池</span>
+<span class="s-cmd">  [1] 内存管理  (1.基础能力, 6分)  命中: 内存池,正文</span>
+<span class="s-cmd">  [2] 数据结构  (1.基础能力, 6分)  命中: 内存池,正文</span>
+<span class="s-cmd">  -&gt; 共 3 篇匹配</span>
+<span class="s-fix">$ python -m gdm search 帧同步</span>
+<span class="s-cmd">  [1] 客户端网络系统  (3.研发能力, 6分)  命中: 帧同步,正文</span>
+<span class="s-cmd">  [2] 网游网络同步  (3.研发能力, 6分)  命中: 帧同步,正文</span>
+<span class="s-cmd">  -&gt; 共 3 篇匹配</span>
+<span class="s-fix">$ python -m gdm search 热更新</span>
+<span class="s-cmd">  [1] 产品热更新  (6.运营能力, 10分)  命中: 热更新,标题,正文</span>
+<span class="s-cmd">  [2] DevOps  (4.生产能力, 6分)  命中: 热更新,正文</span>
+<span class="s-cmd">  -&gt; 共 5 篇匹配</span>
+<span class="s-fix">$ python -m gdm search 幂等</span>
+<span class="s-cmd">  [1] 网络与通信  (2.技术能力, 6分)  命中: 幂等,正文</span>
+<span class="s-cmd">  [2] 客户端网络系统  (3.研发能力, 6分)  命中: 幂等,正文</span>
+<span class="s-cmd">  -&gt; 共 3 篇匹配</span>
+<span class="s-fix">$ python -m gdm search DrawCall</span>
+<span class="s-cmd">  [1] 图形与渲染  (2.技术能力, 6分)  命中: DrawCall,正文</span>
+<span class="s-cmd">  -&gt; 共 1 篇匹配</span>
+<span class="s-head"># [4/5] 按能力域筛选（运营能力内的热更新）</span>
+<span class="s-fix">$ python -m gdm search 热更新 --domain 6</span>
+<span class="s-banner">  产品热更新 · 运营能力</span>
+<span class="s-cmd">  -&gt; 共 2 篇匹配</span>
+<span class="s-head"># [5/5] 自检断言</span>
+<span class="s-pass">. 语料扫描为 16 篇文档  PASS</span>
+<span class="s-pass">. 层级与父文档推断生效（0/1/2 三级）  PASS</span>
+<span class="s-pass">. 覆盖全部 6 个能力域  PASS</span>
+<span class="s-pass">. 三个自动产物均已生成且非空  PASS</span>
+<span class="s-pass">. INDEX.md 含能力域分类与文档链接  PASS</span>
+<span class="s-pass">. KEYWORDS.md 含术语分组  PASS</span>
+<span class="s-pass">. content-data.js 含 DOCS/parent/KEYWORDS  PASS</span>
+<span class="s-pass">. 术语「内存池」跨文档命中 &gt;= 2 篇  PASS</span>
+<span class="s-pass">. 术语「帧同步」跨文档命中 &gt;= 2 篇  PASS</span>
+<span class="s-pass">. 术语「热更新」跨能力域命中 &gt;= 3 篇  PASS</span>
+<span class="s-pass">. 能力域筛选结果全部属于 6.运营能力  PASS</span>
+<span class="s-pass">. 模糊检索可容错拼写  PASS</span>
+<span class="s-sep">------------------------------------------------------------------------------</span>
+<span class="s-head"># 结果: 12/12 断言通过 | 16 篇文档 | 3 个自动产物 | 0 外部依赖</span>
+<span class="s-head"># 交互式导航: 浏览器打开 nav/index.html，支持搜索 + 能力域筛选</span>
+<span class="s-head"># 单元测试: python -m unittest discover -s tests -v</span>
+<span class="s-sep">==============================================================================</span></pre></div></body></html>
