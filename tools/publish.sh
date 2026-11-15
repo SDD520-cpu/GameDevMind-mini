@@ -51,8 +51,21 @@ parts = src.split("\n---\n", 1)
 body = parts[1] if len(parts) > 1 else src
 body = body.split("\n## 任务对照自检", 1)[0]
 body = body.rstrip().rstrip("-").rstrip()
-extra = f"\n- 我的复现代码仓库：`https://github.com/{user}/{repo}`\n"
-body = body.replace("**1｜仓库地址**", "**1｜仓库地址**" + extra, 1)
+old_block = "**1｜仓库地址**\n\n`https://github.com/gonglei007/GameDevMind`"
+new_block = (
+    "**1｜仓库地址**\n\n"
+    "原项目：`https://github.com/gonglei007/GameDevMind`\n"
+    f"我的复现代码仓库：`https://github.com/{user}/{repo}`"
+)
+if old_block in body:
+    body = body.replace(old_block, new_block, 1)
+else:
+    # REPORT.md 结构变化时退化为只追加一行，避免丢失地址
+    body = body.replace(
+        "**1｜仓库地址**",
+        "**1｜仓库地址**\n" + f"我的复现代码仓库：`https://github.com/{user}/{repo}`",
+        1,
+    )
 Path("MESSAGE_TO_SEND.md").write_text(
     "# 发给部长的汇报文案（可直接整段复制）\n\n"
     "配套图片：screenshots/run-demo.png · screenshots/nav-demo.png\n\n" + body + "\n",

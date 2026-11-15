@@ -2,6 +2,8 @@
 
 > 对 [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) **「索引自动生成 → 术语检索 → 交互式导航」**核心链路的零依赖 Python 复现。
 > 按部长第一次任务提出的 5 步要求，换一个开源项目完整做一遍。
+>
+> 本复现版仓库：https://github.com/SDD520-cpu/GameDevMind-mini
 
 **一句话**：这个项目不是拿来 `npm start` 的软件，而是一套「把 124 篇文档组织成可检索知识图谱」的系统；最值得复现的是它的**索引生成机制**。
 
